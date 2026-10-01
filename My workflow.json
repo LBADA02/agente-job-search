@@ -1,0 +1,258 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c8a08a83-b88e-4f1b-9169-d745be1d6386",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "q": "from:(mailer-daemon) OR from:(postmaster)"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "43e152f3-5512-4e1b-9375-52c4f082818d",
+      "name": "Get many messages",
+      "webhookId": "6d7e9e18-83d4-4cdc-b477-3297f2e1084a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HQODJzBqFKqveGwb",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const messages = $input.all();\n\nconst results = [];\nconst seen = new Set();\n\nfor (const item of messages) {\n  const snippet = item.json.snippet || \"\";\n\n  const emails = snippet.match(\n    /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}/g\n  ) || [];\n\n  for (const email of emails) {\n    const normalized = email.trim().toLowerCase();\n\n    if (!seen.has(normalized)) {\n      seen.add(normalized);\n\n      results.push({\n        json: {\n          email: normalized\n        }\n      });\n    }\n  }\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        -352
+      ],
+      "id": "1757b008-74ff-428f-b92c-3e6b5d8f8543",
+      "name": "EXTRACT FAILED EMAILS"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "messageId": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        496,
+        112
+      ],
+      "id": "c35d1eac-fcba-4e7f-a275-cd9366b87b9f",
+      "name": "Delete a message",
+      "webhookId": "7e7f82a3-6620-42fc-b974-aeffb32e7c98",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HQODJzBqFKqveGwb",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "11wKILkVuzphN3UY6x81qYqej-M_3V9X59MnG48d_U8Q",
+          "mode": "list",
+          "cachedResultName": "HR_Recruitment_Emails_Casa_Rabat v2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11wKILkVuzphN3UY6x81qYqej-M_3V9X59MnG48d_U8Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1139039734,
+          "mode": "list",
+          "cachedResultName": "Contacts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11wKILkVuzphN3UY6x81qYqej-M_3V9X59MnG48d_U8Q/edit#gid=1139039734"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        672,
+        -160
+      ],
+      "id": "22981cdb-c203-4f36-95d5-62ac753af268",
+      "name": "Get row(s) in sheet",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vtgW3Ftaag5550dR",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        928,
+        -272
+      ],
+      "id": "f08ae384-7b76-4cf3-85a3-eb21d1996553",
+      "name": "FIND FAILED EMAILS IN SHEET"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst failedEmails = new Set();\nconst sheetRows = [];\n\nfor (const item of items) {\n  const data = item.json;\n\n  // Failed-email items\n  if (data.email) {\n    failedEmails.add(\n      data.email.trim().toLowerCase()\n    );\n  }\n\n  // Google Sheets rows\n  if (data['Email (exact as supplied)']) {\n    sheetRows.push(data);\n  }\n}\n\nconst matches = [];\n\nfor (const row of sheetRows) {\n  const sheetEmail = row['Email (exact as supplied)']\n    ?.trim()\n    .toLowerCase();\n\n  if (sheetEmail && failedEmails.has(sheetEmail)) {\n    matches.push({\n      json: row\n    });\n  }\n}\n\nreturn matches;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        -272
+      ],
+      "id": "50d499bc-bf47-4fe3-a2a7-0d19c5202be7",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "documentId": {
+          "__rl": true,
+          "value": "11wKILkVuzphN3UY6x81qYqej-M_3V9X59MnG48d_U8Q",
+          "mode": "list",
+          "cachedResultName": "HR_Recruitment_Emails_Casa_Rabat v2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11wKILkVuzphN3UY6x81qYqej-M_3V9X59MnG48d_U8Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1139039734,
+          "mode": "list",
+          "cachedResultName": "Contacts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11wKILkVuzphN3UY6x81qYqej-M_3V9X59MnG48d_U8Q/edit#gid=1139039734"
+        },
+        "startIndex": "={{ $json.row_number }}"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1376,
+        -272
+      ],
+      "id": "08505bb0-f7e9-4338-a148-90623d59f610",
+      "name": "Delete rows or columns from sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vtgW3Ftaag5550dR",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get many messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages": {
+      "main": [
+        [
+          {
+            "node": "EXTRACT FAILED EMAILS",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Delete a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EXTRACT FAILED EMAILS": {
+      "main": [
+        [
+          {
+            "node": "FIND FAILED EMAILS IN SHEET",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "FIND FAILED EMAILS IN SHEET",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "FIND FAILED EMAILS IN SHEET": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Delete rows or columns from sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "5c8ae149-fe12-4f4f-8a35-821b3ef9fc6b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "80daf530fd02e4c3b8ed11ca725c3e1df62d6403ac9b8faee2bafc0d504f8a47"
+  },
+  "nodeGroups": [],
+  "id": "zpO5TenVnS3ivgmN",
+  "tags": []
+}

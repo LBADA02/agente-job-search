@@ -1,0 +1,491 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        432
+      ],
+      "id": "9b55c42a-eb33-4e0b-8d66-1d6c1e312d41",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "11wKILkVuzphN3UY6x81qYqej-M_3V9X59MnG48d_U8Q",
+          "mode": "list",
+          "cachedResultName": "HR_Recruitment_Emails_Casa_Rabat v2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11wKILkVuzphN3UY6x81qYqej-M_3V9X59MnG48d_U8Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1139039734,
+          "mode": "list",
+          "cachedResultName": "Contacts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11wKILkVuzphN3UY6x81qYqej-M_3V9X59MnG48d_U8Q/edit#gid=1139039734"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": " send_status",
+              "lookupValue": "NEW"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -576,
+        656
+      ],
+      "id": "5174a450-8b6b-47e4-a663-4afa7fce16c0",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vtgW3Ftaag5550dR",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "maxItems": 30
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        656
+      ],
+      "id": "25e96909-fe42-4e46-9bfd-43c4ec85f1e7",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['Email (exact as supplied)'] }}",
+        "subject": "Candidature spontanée – Développeur Backend Java / Spring Boot",
+        "message": "<p>Bonjour,</p>  <p>Je suis Hamza EL BADAOUI, ingénieur en Génie Informatique fraîchement diplômé, spécialisé en développement Java / Spring Boot / Angular.</p>  <p>Lors de mon PFE chez Cegedim Assurances, j’ai travaillé sur des applications Full Stack, des architectures Microservices et des API REST, avec notamment Java, Spring Boot, Angular, React, Kafka, Docker et CI/CD.</p>  <p>Je serais ravi d’échanger avec vous au sujet de vos opportunités actuelles.</p>  <p>Cordialement,<br> Hamza EL BADAOUI<br> +212 618 641 738<br> hamza.elbadaoui@outlook.com<br> linkedin.com/in/hamza-el-badaoui</p>",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        336,
+        528
+      ],
+      "id": "de1699d0-bfd5-4b84-aa48-dab76646c90b",
+      "name": "Send a message",
+      "webhookId": "c4afe1d3-0eb0-4ac4-8c8c-5b10192c2de6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HQODJzBqFKqveGwb",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "1TY2_QLCN3qe7txNCDsislTnq20ippcw1",
+          "mode": "list",
+          "cachedResultName": "CV_EL_BADAOUI_Hamza_Java_Angular_V3.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1TY2_QLCN3qe7txNCDsislTnq20ippcw1/view?usp=drivesdk"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -592,
+        432
+      ],
+      "id": "7cfc9bcc-fa7a-4cf6-8833-3413e3a80727",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "S51bnq9tFpQTC0Lm",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -128,
+        448
+      ],
+      "id": "57896395-07b6-470d-95b4-f0d18edc6025",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "11wKILkVuzphN3UY6x81qYqej-M_3V9X59MnG48d_U8Q",
+          "mode": "list",
+          "cachedResultName": "HR_Recruitment_Emails_Casa_Rabat v2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11wKILkVuzphN3UY6x81qYqej-M_3V9X59MnG48d_U8Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1139039734,
+          "mode": "list",
+          "cachedResultName": "Contacts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11wKILkVuzphN3UY6x81qYqej-M_3V9X59MnG48d_U8Q/edit#gid=1139039734"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            " send_status": "SENT",
+            "Email (exact as supplied)": "={{ $('Loop Over Items').item.json['Email (exact as supplied)'] }}",
+            "last_sent_at": "={{ $now.format('yyyy-MM-dd H:m:s') }}",
+            "send_count": "={{ Number($('Loop Over Items').item.json.send_count || 0) + 1 }}"
+          },
+          "matchingColumns": [
+            "Email (exact as supplied)"
+          ],
+          "schema": [
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email (exact as supplied)",
+              "displayName": "Email (exact as supplied)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": " send_status",
+              "displayName": " send_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Fit",
+              "displayName": "Fit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Source / context",
+              "displayName": "Source / context",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "last_sent_at",
+              "displayName": "last_sent_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "send_count",
+              "displayName": "send_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_error",
+              "displayName": "last_error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        528,
+        528
+      ],
+      "id": "f26e3544-04de-492c-ad52-1dfcdb492504",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vtgW3Ftaag5550dR",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        96,
+        448
+      ],
+      "id": "eaebdfab-1870-458a-a32b-9568d07304db",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "chatId": "6246223704",
+        "text": "=✅ Candidatures terminées  La campagne d'envoi des candidatures est terminée.  📧 Les emails sélectionnés ont été envoyés. 📊 Les statuts ont été mis à jour dans Google Sheets. \n{{ $now.format('yyyy-MM-dd h:m:s') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        640,
+        288
+      ],
+      "id": "962e5630-6541-454e-babc-c66818d10ab9",
+      "name": "Send a text message",
+      "webhookId": "b789e4b5-721e-40a5-83ee-ade9e7dae3b6",
+      "credentials": {
+        "telegramApi": {
+          "id": "MvuHCXM38UaM331J",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{\n  json: {\n    message: \"✅ Candidatures terminées\\n\\n📧 Les emails sélectionnés ont été envoyés.\\n📊 Les statuts ont été mis à jour dans Google Sheets.\\n🕐 \" + new Date().toLocaleString('fr-FR')\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        368,
+        288
+      ],
+      "id": "530abafd-eb5c-4e7c-a3f1-7595d6c93a20",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "amount": 40
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        736,
+        640
+      ],
+      "id": "1c87b22a-37ba-4d52-ab04-5da7e9d2d144",
+      "name": "Wait",
+      "webhookId": "5ccf19df-39ea-44f6-8b0f-a29c5aa9c2b7"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8210cbd8-6bf6-454c-8d48-aaa402068f8c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "80daf530fd02e4c3b8ed11ca725c3e1df62d6403ac9b8faee2bafc0d504f8a47"
+  },
+  "nodeGroups": [],
+  "id": "rfXT49oWmeOwfTjX",
+  "tags": []
+}
